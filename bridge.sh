@@ -38,4 +38,4 @@ function cleanup {
     sleep 1
 }
 trap cleanup 0 HUP INT QUIT PIPE TERM
-ssh admin@$fw $bridge tap $port
+ssh admin@$fw ./$bridge tap $port
