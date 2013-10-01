@@ -5,10 +5,10 @@ behavior of network switches with a standard protocol (e.g., OpenFlow). The
 logic for forwarding the traffic in the network is centralized in a single
 software component called the _controller_.
 
-The idea of this proof of concept project, is to add a Check Point gateway,
-such that depending on a configurable policy, traffic in the network would
-either bypass the gateway or will be forwarded to the gateway to decide on what
-to do (depending on its own policy).
+The idea of this proof of concept project, is to integrate a firewall gateway
+into an SDN cotrolled network, such that depending on a configurable policy,
+traffic in the network would either bypass the gateway or will be forwarded to
+the gateway to decide on what to do (depending on the gateway policy).
 
 Whenever a switch encounters an unknown packet it will forward it to the
 controller.
@@ -86,7 +86,7 @@ modules to support web services
 
 # Setup
 
-## Ubuntu server VM
+## Ubuntu Server VM
 
 *   Install an Ubuntu server 12.04.2 32bit on VirtualBox (another VM technology
     can be used as well):
@@ -122,7 +122,7 @@ modules to support web services
 
 # Configuration
 
-## Mininet topology - topo.json
+## Mininet Topology
 
 Configures the Mininet switches and hosts (it is read by custom.py):
 
@@ -133,7 +133,7 @@ Configures the Mininet switches and hosts (it is read by custom.py):
 	a host (either `hNN` or `fw1`). `PORT` need only be specified for switches,
 	it should be null for hosts.
 
-*   Example (see also -  ~/sdn/topo.json in the source code):
+*   Example (see -  ~/sdn/topo.json in the source code):
 
 		{
     		"switches": ["s1", "s2", "s3"],
@@ -148,7 +148,7 @@ Configures the Mininet switches and hosts (it is read by custom.py):
     		]
 		}
 
-## Firewall bypass policy - fw.json
+## Firewall Bypass Policy
 
 Configures the fw bypass/forwarding policy (it is read by fw.py):
 
@@ -172,7 +172,7 @@ Configures the fw bypass/forwarding policy (it is read by fw.py):
 		* `ACTION`: true means allow bypass, false means forward to the
 		  firewall
 
-* Example (see also - ~/sdn/fw.json in the source code):
+* Example (see - ~/sdn/fw.json in the source code):
 
 		{
     		"fw1": ["s1", 1],
@@ -213,15 +213,20 @@ Configures the fw bypass/forwarding policy (it is read by fw.py):
 	packets that return from socket are written to the fw1 "host" interface
 	using tcpreplay.
 
-## Firewall gateway on another VM
+## Firewall Gateway on another VM
 
-*   Start a VM with a Gaia gateway (tested with R76) that has an interface on
-    the same host-only network as the Mininet VM.
+*   Asssumptions:
 
-*   Set up the default shell for admin to be /bin/bash
+    *    The gateway can run on a VM.
 
-*   Arrange for a python distribution on the Gaia gateway, such that the python
-    executable is in the PATH
+	*    The gateway has a working Python envrionment.
+
+	*    The gateway will filter traffic that comes in on a tap (tun/tap)
+		 interface. The interface is connected to a Linux bridge, which is
+		 configured to work in hairpin mode.
+
+*   Start a VM with a firewall gateway that has an interface on the same
+    host-only network as the Mininet VM.
 
 *   Run the tunneling bridge client/server on the sdn and gateway VMs (run a
     single script from the sdn VM).
@@ -231,13 +236,13 @@ Configures the fw bypass/forwarding policy (it is read by fw.py):
     (press Return or Ctrl-C to stop)
 
 	"bridge.sh" runs a local "bridge.py replay" to forward the traffic to the
-	Gaia gateway. It also runs (over ssh) a remote "bridge.py tap" on the Gaia
-	gateway that creates a tap interface and listens for a connection from the
-	Mininet VM and forwards that packets into the tap interface, and from the
-	tap interface back to the Mininet VM.
+	firewall gateway. It also runs (over ssh) a remote "bridge.py tap" on the
+	firewall gateway that creates a tap interface and listens for a connection
+	from the Mininet VM and forwards that packets into the tap interface, and
+	from the tap interface back to the Mininet VM.
 
 
-# Web services
+# Web Services
 
 POX exposes a set of extensible web services as follows:
 
@@ -255,7 +260,7 @@ POX exposes a set of extensible web services as follows:
         $ curl -D - http://127.0.0.1:8000/FW/
 
 
-# Miscellaneous helper scripts
+# Miscellaneous Helper Scripts
 
 *   Use ~/sdn/m to control hosts in a running Mininet.
 
