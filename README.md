@@ -101,11 +101,11 @@ modules to support web services
 
 ## Code
 
-*   Install the demo code from Bitbucket:
+*   Install the demo code from GitHub:
 
         $ sudo apt-get install git
         $ cd ~
-        $ git clone https://bitbucket.org/chkp/sdn.git
+        $ git clone https://github.com/CheckPointSW/sdn.git
 
 ## Mininet
 
